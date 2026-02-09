@@ -78,7 +78,7 @@ class JobAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\Attribute('multiple-document-handling', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             case 'copies':
-                $this->attributes[$name] = new \obray\ipp\Attribute('copies', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = new \obray\ipp\Attribute('copies', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'finishings':
                 $this->attributes[$name] = new \obray\ipp\Attribute('finishings', $value, \obray\ipp\enums\Types::ENUM);
