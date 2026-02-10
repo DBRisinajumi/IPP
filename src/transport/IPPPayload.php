@@ -81,30 +81,30 @@ class IPPPayload
         $this->requestId = new \obray\ipp\types\Integer($unpacked['RequestID']);
         
         $offset = 8;
-        
+
         // decode operation attributes
         $this->operationAttributes = new \obray\ipp\OperationAttributes();
         $newTag = $this->operationAttributes->decode($binary, $offset);
-        
+
         // decode job attributes
-        if($newTag!==false && $newTag === 0x02){
+        if ($newTag === 0x02){
             $this->jobAttributes = [];
-            while($newTag !== false && $newTag === 0x02){
+            while($newTag === 0x02){
                 $jobAttributes = new \obray\ipp\JobAttributes();
                 $newTag = $jobAttributes->decode($binary, $offset);
                 $this->jobAttributes[] = $jobAttributes;
             }
         }
-        
+
         // decode printer attributes
-        if($newTag!==false && $newTag === 0x04){
+        if($newTag === 0x04){
             $this->printerAttributes = [];
-            while($newTag !== false && $newTag === 0x04){
+            while($newTag === 0x04){
                 $printerAttributes = new \obray\ipp\PrinterAttributes();
                 $newTag = $printerAttributes->decode($binary, $offset);
                 $this->printerAttributes[] = $printerAttributes;
             }
-        }  
+        }
     }
 
 }

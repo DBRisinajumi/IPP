@@ -38,4 +38,9 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
                 throw new \Exception("Invalid operational parameter.");
         }
     }
+
+    public function getAllAttributes(): array
+    {
+        return $this->attributes;
+    }
 }

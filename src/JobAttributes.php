@@ -115,4 +115,9 @@ class JobAttributes extends \obray\ipp\AttributeGroup
                 break;
         }
     }
+
+    public function getAllAttributes(): array
+    {
+        return $this->attributes;
+    }
 }

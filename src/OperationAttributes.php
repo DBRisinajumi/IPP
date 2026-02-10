@@ -101,4 +101,9 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             throw new ClientErrorCharsetNotSupported();
         }
     }
+
+    public function getAllAttributes(): array
+    {
+        return $this->attributes;
+    }
 }
