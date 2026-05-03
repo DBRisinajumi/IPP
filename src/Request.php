@@ -2,26 +2,40 @@
 
 namespace obray\ipp;
 
-class Request implements \obray\ipp\interfaces\RequestInterface
+use obray\ipp\exceptions\AuthenticationError;
+use obray\ipp\exceptions\HTTPError;
+use obray\ipp\interfaces\RequestInterface;
+use obray\ipp\transport\IPPPayload;
+use RuntimeException;
+
+class Request implements RequestInterface
 {
     /**
      * send
-     * 
+     *
      * This method applies request headers, formulates the request and then
      * parses the response into a response payload.
-     * 
+     *
+     * @param string $printerURI
      * @param string $encodedPayload This is the actual payload of the request
-     * 
-     * @return \obray\ipp\transport\IPPPayload
+     * @param string|null $user
+     * @param string|null $password
+     * @param array $curlOptions
+     * @return IPPPayload
+     * @throws AuthenticationError
+     * @throws HTTPError
+     * @throws \Exception
      */
 
-    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, array $curlOptions=[]): \obray\ipp\transport\IPPPayload
+    public static function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, array $curlOptions=[]): IPPPayload
     {
         // interpret ipp request into http request
         $results = parse_url($printerURI);
         $postURL = $printerURI;
-        if(empty($results['path'])) $results['path'] = '';
-        if($results['scheme'] == 'ipp'){
+        if(empty($results['path'])) {
+            $results['path'] = '';
+        }
+        if($results['scheme'] === 'ipp'){
             $postURL = 'http://' . $results['host'] . ':' . ($results['port'] ?? '631'). $results['path'];
         }
 
@@ -31,7 +45,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
             1 => "Content-Length: " . strlen($encodedPayload),
             2 => "Connection: close"
         );
-        if(!empty($user) && !empty($password)){
+        if (!empty($user) && !empty($password)) {
             $headers[] = "Authorization: Basic " . base64_encode($user.':'.$password);
         }
 
@@ -43,7 +57,9 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
 
         forEach($curlOptions as $curlOption){
-            if(!isset($curlOption['key']) || !isset($curlOption['value'])) continue;
+            if (!isset($curlOption['key'], $curlOption['value'])) {
+                continue;
+            }
             curl_setopt($ch, $curlOption['key'], $curlOption['value']);
         }
 
@@ -52,18 +68,23 @@ class Request implements \obray\ipp\interfaces\RequestInterface
 
         $server_output = curl_exec($ch);
 
-        if(curl_errno($ch)) throw new \Exception(curl_error($ch));
+        if(curl_errno($ch)) {
+            throw new RuntimeException('curl error: ' . curl_error($ch));
+        }
         $info = curl_getinfo($ch);
         
         curl_close($ch);
 
-        if($info['http_code'] == 401) throw new \obray\ipp\exceptions\AuthenticationError();
-        if($info['http_code'] != 200) throw new \obray\ipp\exceptions\HTTPError($info['http_code']);
+        if ((int)$info['http_code'] === 401) {
+            throw new AuthenticationError();
+        }
+        if ((int)$info['http_code'] !== 200) {
+            throw new HTTPError($info['http_code']);
+        }
 
         // Further processing ...
-        $responsePayload = new \obray\ipp\transport\IPPPayload();
+        $responsePayload = new IPPPayload();
         $responsePayload->decode($server_output);
         return $responsePayload;
-        
     }
 }

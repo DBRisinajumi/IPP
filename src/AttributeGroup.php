@@ -25,6 +25,16 @@ abstract class AttributeGroup implements \JsonSerializable
      * @param mixed $value - the value to be set
      */
 
+    public function __isset(string $name)
+    {
+        return isset($this->attributes[$name]);
+    }
+
+    public function isSetAttribute(string $name): bool
+    {
+        return isset($this->attributes[$name]);
+    }
+
     public function __set(string $name, $value)
     {
         $this->set($name, $value);
@@ -125,7 +135,7 @@ abstract class AttributeGroup implements \JsonSerializable
         }
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         return $this->attributes;
     }

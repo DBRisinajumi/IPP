@@ -341,6 +341,7 @@ class Printer
     }
 
     /**
+     * send to printer request and get a response with attributes
      * @throws AuthenticationError
      * @throws HTTPError
      */

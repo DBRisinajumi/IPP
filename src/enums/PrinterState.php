@@ -8,4 +8,5 @@ class PrinterState extends Enum
      const idle = 3;
      const processing = 4;
      const stopped = 5;
+     const offline = 777;
 }
