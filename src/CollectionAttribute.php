@@ -16,7 +16,7 @@ class CollectionAttribute implements \JsonSerializable
     
     private $members = [];
 
-    public function __construct($name=NULL, array $members=NULL)
+    public function __construct($name=NULL, ?array $members=NULL)
     {
         // hardcoded values
         $this->valueLength = new \obray\ipp\types\basic\SignedShort(0);
@@ -24,14 +24,14 @@ class CollectionAttribute implements \JsonSerializable
         $this->endValueLength = new \obray\ipp\types\basic\SignedShort(0);
 
         // return this if no name and value specified
-        if($name === NULL && $members === NULL) return $this;
+        if($name === NULL && $members === NULL) return;
 
         // populate object properties
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
         $valueLength = 0;
-        forEach($members as $name => $value){
-            $this->members[] = new \obray\ipp\types\MemberAttribute($name, $value);
+        foreach($members??[] as $name1 => $value){
+            $this->members[] = new \obray\ipp\types\MemberAttribute($name1, $value);
         }
     }
 

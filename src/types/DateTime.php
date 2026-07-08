@@ -7,7 +7,7 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
     private $datetime;
     private $length = 11;
 
-    public function __construct(string $dateTimeString=NULL)
+    public function __construct(?string $dateTimeString=NULL)
     {
         if(!empty($dateTimeString)){
             $this->datetime = new \DateTime($dateTimeString);
